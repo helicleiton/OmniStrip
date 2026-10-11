@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OmniStrip - channel strip vintage gratuita para REAPER</title>
+<meta name="description" content="OmniStrip: channel strip gratuita para o REAPER com saturação de console e de fita de rolo, gate, EQ de 4 bandas, compressor, chorus, delay, reverb e presets por módulo.">
+<style>
+  :root {
+    --bg:#131416; --chassis:#1c1d20; --plate:#5f6e78; --plate-lo:#4b5861; --strip:#15171b;
+    --edge:#2c2e33; --cream:#ede3bd; --dim:#9a9c9f; --amber:#f2b34c; --red:#ff4a2b; --wood:#5a3116;
+  }
+  * { box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--cream); font:16px/1.6 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif; }
+  a { color:var(--amber); }
+  .wrap { max-width:1040px; margin:0 auto; padding:0 20px; }
+
+  header { padding:26px 0 6px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .mark { display:flex; align-items:center; gap:12px; background:#08090a; border:1px solid #b89a55; padding:6px 16px; letter-spacing:.2em; font-weight:800; font-size:17px; }
+  .mark span { color:var(--amber); font-size:10px; letter-spacing:.14em; font-weight:700; }
+  nav a { color:var(--dim); text-decoration:none; margin-left:18px; font-size:14px; }
+  nav a:hover { color:var(--cream); }
+
+  .hero { padding:44px 0 10px; }
+  h1 { font-size:clamp(30px,5vw,50px); line-height:1.12; margin:0 0 14px; letter-spacing:-.01em; }
+  h1 em { color:var(--amber); font-style:normal; }
+  .lead { color:var(--dim); font-size:18px; max-width:720px; margin:0 0 26px; }
+  .note { color:var(--dim); font-size:13px; margin:12px 0 0; }
+
+  /* modulo de download: mesma linguagem dos modulos do plugin */
+  .module { background:linear-gradient(var(--plate),var(--plate-lo)); border:1px solid #0b0c0d; border-radius:3px; box-shadow:0 3px 0 #0008, inset 1px 1px 0 #fff3, inset -1px -1px 0 #0006; position:relative; }
+  .module > .title { background:var(--strip); padding:7px 30px; font-size:12px; font-weight:800; letter-spacing:.14em; border-bottom:1px solid #000a; display:flex; justify-content:space-between; gap:12px; }
+  .module > .title i { color:var(--amber); font-style:normal; }
+  .module::before, .module::after { content:""; position:absolute; top:11px; width:7px; height:7px; border-radius:50%; background:radial-gradient(circle at 35% 35%,#cfcfcc,#6c6c6a); box-shadow:0 1px 1px #000a; }
+  .module::before { left:10px; } .module::after { right:10px; }
+  .module .body { padding:22px 26px 24px; }
+
+  .get { max-width:720px; }
+  .get h2 { margin:0 0 4px; font-size:21px; letter-spacing:0; text-transform:none; color:#fff8dc; }
+  .get p { margin:0 0 14px; color:#e3e6e8; font-size:15px; }
+  .get form { display:flex; gap:8px; flex-wrap:wrap; }
+  .get input { flex:1 1 240px; min-width:0; padding:13px 14px; border-radius:3px; border:1px solid #000; background:#0b0c0d; color:var(--cream); font:inherit; box-shadow:inset 0 2px 4px #000; }
+  .get input:focus { outline:2px solid var(--amber); outline-offset:1px; }
+  .btn { display:inline-block; padding:13px 24px; border-radius:3px; border:1px solid #000; background:linear-gradient(#ffc766,#e09a2c); color:#1a1205; font:inherit; font-weight:800; letter-spacing:.04em; cursor:pointer; text-decoration:none; box-shadow:0 0 18px #f2b34c55, inset 0 1px 0 #fff8; }
+  .btn:hover { filter:brightness(1.08); }
+  .get .small { color:#d6dadd; font-size:13px; margin:12px 0 0; }
+  .get .done h2 { color:#fff; }
+  .setup { background:#3a0d08; border:1px solid var(--red); color:#ffd9d2; padding:10px 14px; border-radius:3px; font-size:14px; margin:0 0 14px; }
+
+  /* imagem do plugin, com laterais de madeira */
+  .shot { margin:40px 0 8px; border-left:14px solid var(--wood); border-right:14px solid var(--wood); border-radius:3px; background:var(--chassis); box-shadow:0 10px 40px #000a; overflow:hidden; }
+  .shot img { display:block; width:100%; height:auto; }
+  .shot .fallback { display:none; padding:26px; gap:18px; align-items:center; justify-content:center; flex-wrap:wrap; }
+  .shot.noimg img { display:none; } .shot.noimg .fallback { display:flex; }
+  .vu { width:230px; max-width:100%; background:#08090a; padding:8px; border-radius:3px; }
+  .vu svg { display:block; width:100%; height:auto; }
+  .needle { transform-origin:100px 108px; animation:needle 2.6s ease-in-out infinite; }
+  .vu:nth-child(2) .needle { animation-duration:3.4s; animation-delay:-1.2s; }
+  @keyframes needle { 0%{transform:rotate(-34deg)} 22%{transform:rotate(6deg)} 38%{transform:rotate(-12deg)} 60%{transform:rotate(18deg)} 78%{transform:rotate(-4deg)} 100%{transform:rotate(-34deg)} }
+  @media (prefers-reduced-motion:reduce) { .needle { animation:none; transform:rotate(4deg); } }
+  .knobs { display:flex; gap:16px; flex-wrap:wrap; justify-content:center; }
+  .knob { width:54px; height:54px; border-radius:50%; background:radial-gradient(circle at 50% 40%,#2c2c2f,#08080a 70%); box-shadow:0 5px 8px #000a; position:relative; }
+  .knob::before { content:""; position:absolute; inset:9px; border-radius:50%; background:radial-gradient(circle at 38% 32%,#fff5,transparent 45%),var(--c,#b8271f); box-shadow:0 0 0 1px #0009; }
+  .knob::after { content:""; position:absolute; left:50%; top:3px; width:2px; height:24px; margin-left:-1px; background:#faf5e6; transform-origin:50% 24px; transform:rotate(var(--r,0deg)); }
+
+  h2 { font-size:13px; letter-spacing:.16em; text-transform:uppercase; color:var(--dim); margin:60px 0 18px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:14px; }
+  .card h3 { margin:0 0 6px; font-size:17px; color:#fff8dc; } .card p { margin:0; color:#e3e6e8; font-size:15px; }
+  .card .body { padding:16px 20px 18px; }
+
+  table { width:100%; border-collapse:collapse; background:var(--chassis); border:1px solid var(--edge); font-size:15px; }
+  th, td { text-align:left; padding:11px 16px; border-bottom:1px solid var(--edge); vertical-align:top; }
+  tr:last-child td { border-bottom:0; } td:first-child { white-space:nowrap; font-weight:700; color:var(--amber); letter-spacing:.06em; font-size:13px; }
+  td { color:#d9d6c8; }
+  @media (max-width:560px) { td:first-child { white-space:normal; } th, td { padding:9px 10px; } nav a { margin:0 14px 0 0; } }
+  ol { padding-left:22px; } li { margin:5px 0; color:#d9d6c8; } li b { color:var(--cream); }
+  code { background:#0b0c0d; border:1px solid var(--edge); border-radius:3px; padding:1px 6px; font-size:14px; }
+  .warn { border-left:3px solid var(--amber); background:var(--chassis); padding:16px 20px; }
+  .warn h3 { margin:0 0 6px; font-size:16px; } .warn p { margin:6px 0 0; color:var(--dim); font-size:15px; }
+  footer { margin:64px 0 40px; padding-top:22px; border-top:1px solid var(--edge); color:var(--dim); font-size:13px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="mark">OMNISTRIP <span>MODEL 4601</span></div>
+  <nav>
+    <a href="#modulos">Módulos</a><a href="#presets">Presets</a><a href="#instalar">Instalar</a><a href="#baixar">Baixar</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>O canal de uma mesa dos anos 70, <em>dentro do REAPER</em>.</h1>
+  <p class="lead">O OmniStrip é uma channel strip gratuita: preamp com saturação de console ou de fita de rolo, gate, equalizador de 4 bandas, compressor, chorus, delay e reverb em um único painel, com VUs de agulha e presets prontos em cada módulo.</p>
+
+  <div class="module get" id="baixar">
+    <div class="title">DOWNLOAD <i>GRATUITO</i></div>
+    <div class="body">
+      <div id="pedir">
+        <h2>Baixe o OmniStrip</h2>
+        <p>O plugin é gratuito. A única coisa que peço é o seu e-mail, para avisar de novas versões.</p>
+        <p class="setup" id="aviso-config" hidden>Formulário de e-mail ainda não configurado: os e-mails não estão sendo registrados. Preencha FORM_ACTION e FORM_FIELD no fim deste arquivo.</p>
+        <form id="cadastro" method="post" target="envio">
+          <input type="email" id="email" placeholder="seu e-mail" required autocomplete="email" aria-label="Seu e-mail">
+          <button class="btn" type="submit">Baixar grátis</button>
+        </form>
+        <p class="small">Versão 1.0 &middot; para REAPER (Windows, macOS e Linux) &middot; seu e-mail é usado só para avisos sobre o OmniStrip.</p>
+      </div>
+      <div id="liberado" class="done" hidden>
+        <h2>Obrigado! O download já começou.</h2>
+        <p>Se não começar sozinho, use o botão abaixo. Depois veja <a href="#instalar" style="color:#fff">como instalar</a>.</p>
+        <a class="btn" id="link-download" href="download/OmniStrip.zip" download>Baixar OmniStrip.zip</a>
+      </div>
+      <iframe name="envio" title="envio" hidden></iframe>
+    </div>
+  </div>
+
+  <div class="shot" id="shot">
+    <img src="screenshot.png" alt="Painel do OmniStrip: módulos de input, gate, compressor, equalizador, medidores VU, chorus, delay, reverb e output" onerror="document.getElementById('shot').classList.add('noimg')">
+    <div class="fallback" aria-hidden="true">
+      <div class="vu"><svg viewBox="0 0 200 120"><defs><linearGradient id="f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe9ae"/><stop offset="1" stop-color="#d2b97a"/></linearGradient></defs><rect width="200" height="120" fill="url(#f)"/><path d="M36 44 A90 90 0 0 1 128 22" fill="none" stroke="#1d1a14" stroke-width="2"/><path d="M128 22 A90 90 0 0 1 164 44" fill="none" stroke="#c41f19" stroke-width="4"/><text x="100" y="78" text-anchor="middle" font-family="Arial" font-weight="700" font-size="16" fill="#1d1a14">VU</text><line class="needle" x1="100" y1="108" x2="100" y2="24" stroke="#14110d" stroke-width="2"/><rect y="100" width="200" height="20" fill="#0f0f11"/></svg></div>
+      <div class="vu"><svg viewBox="0 0 200 120"><rect width="200" height="120" fill="url(#f)"/><path d="M36 44 A90 90 0 0 1 128 22" fill="none" stroke="#1d1a14" stroke-width="2"/><path d="M128 22 A90 90 0 0 1 164 44" fill="none" stroke="#c41f19" stroke-width="4"/><text x="100" y="78" text-anchor="middle" font-family="Arial" font-weight="700" font-size="16" fill="#1d1a14">VU</text><line class="needle" x1="100" y1="108" x2="100" y2="24" stroke="#14110d" stroke-width="2"/><rect y="100" width="200" height="20" fill="#0f0f11"/></svg></div>
+      <div class="knobs">
+        <div class="knob" style="--c:#b8271f;--r:-40deg"></div><div class="knob" style="--c:#cc7420;--r:25deg"></div>
+        <div class="knob" style="--c:#2e5c9e;--r:70deg"></div><div class="knob" style="--c:#38855c;--r:-90deg"></div>
+        <div class="knob" style="--c:#dbcfa8;--r:110deg"></div><div class="knob" style="--c:#8c9194;--r:0deg"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<h2 id="modulos">Módulos</h2>
+<div class="grid">
+  <div class="module card"><div class="title">INPUT</div><div class="body"><h3>Preamp com console ou fita</h3><p>Ganho de entrada, filtros passa-altas e passa-baixas, inversão de fase e drive com dois caracteres: saturação de console ou de fita de rolo, com os agudos comprimindo antes e um leve reforço nos graves.</p></div></div>
+  <div class="module card"><div class="title">GATE</div><div class="body"><h3>Gate e expander</h3><p>Threshold, attack, release e range. Com range raso funciona como expander suave; com range fundo, como gate seco para bumbo, caixa e tons.</p></div></div>
+  <div class="module card"><div class="title">EQUALIZER</div><div class="body"><h3>EQ musical de 4 bandas</h3><p>Shelf de graves, dois médios paramétricos com Q ajustável e shelf de agudos, com ±15 dB por banda.</p></div></div>
+  <div class="module card"><div class="title">COMPRESSOR</div><div class="body"><h3>Compressor com sidechain filtrado</h3><p>Threshold, ratio de 1:1 a 20:1, attack, release e makeup. O passa-altas no detector evita que os graves façam o compressor bombear.</p></div></div>
+  <div class="module card"><div class="title">ROUTING</div><div class="body"><h3>EQ antes ou depois</h3><p>Um botão inverte a ordem entre equalizador e compressor, como nas mesas grandes.</p></div></div>
+  <div class="module card"><div class="title">CHORUS &middot; DELAY &middot; REVERB</div><div class="body"><h3>Efeitos em paralelo</h3><p>Chorus estéreo, delay livre ou sincronizado ao andamento do projeto e reverb com tamanho de sala e amortecimento de agudos, cada um com seu mix.</p></div></div>
+  <div class="module card"><div class="title">OUTPUT</div><div class="body"><h3>Saída e imagem estéreo</h3><p>Largura estéreo de mono a 200%, trim de saída, pan, mute e botão de mono para conferir a mixagem.</p></div></div>
+  <div class="module card"><div class="title">METERS</div><div class="body"><h3>VUs de agulha</h3><p>VU de entrada e de saída com LED de clip, medidor de redução do compressor e escada de LEDs para o gate.</p></div></div>
+  <div class="module card"><div class="title">AUTOMAÇÃO</div><div class="body"><h3>Sem estalos</h3><p>Todos os controles são suavizados e automatizáveis no REAPER: dá para mover ou automatizar qualquer knob durante a reprodução.</p></div></div>
+</div>
+
+<h2 id="presets">Presets por módulo</h2>
+<table>
+  <tr><td>INPUT</td><td>Voz Limpa, Violão, Guitarra, Baixo Quente, Bateria Punch, Fita Quente, Fita Saturada, Lo-Fi</td></tr>
+  <tr><td>GATE</td><td>Voz Suave, Bumbo Seco, Caixa, Tons, Ruído de Guitarra, Expander Leve, Gate Duro</td></tr>
+  <tr><td>EQUALIZER</td><td>Voz Presença, Voz Quente, Violão, Guitarra, Baixo Definido, Bumbo, Caixa, Overheads, Loudness, Telefone</td></tr>
+  <tr><td>COMPRESSOR</td><td>Voz Suave, Voz Agressiva, Violão, Baixo, Bumbo/Caixa Punch, Bateria Glue, Mix Glue, Limiter</td></tr>
+  <tr><td>CHORUS</td><td>Abertura Sutil, Clássico Anos 80, Lento e Cheio, Rápido Brilhante, 12 Cordas, Vibrato</td></tr>
+  <tr><td>DELAY</td><td>Doubler, Slapback, Eco de Fita, Eco 1/4, Rítmico 1/8, 1/8 Pontuado, Ambiente Longo</td></tr>
+  <tr><td>REVERB</td><td>Sala Pequena, Ambiência Brilhante, Sala de Bateria, Plate de Voz, Câmara Escura, Hall Grande, Catedral</td></tr>
+  <tr><td>OUTPUT</td><td>Estreito, Largo, Extra Largo, Mono</td></tr>
+</table>
+<p class="note">Os presets são pontos de partida: ajuste os thresholds do gate e do compressor ao nível da sua gravação.</p>
+
+<h2 id="instalar">Como instalar</h2>
+<ol>
+  <li>Baixe e descompacte o <b>OmniStrip.zip</b>.</li>
+  <li>No REAPER, abra <b>Options &gt; Show REAPER resource path in explorer/finder</b> e entre na pasta <code>Effects</code>.</li>
+  <li>Copie a pasta <b>OmniStrip</b> do zip para dentro de <code>Effects</code>.</li>
+  <li>Abra a janela de efeitos de uma pista, aperte <b>F5</b> para atualizar a lista e procure por <b>OmniStrip</b>.</li>
+</ol>
+<p class="note">No painel: arraste um knob para ajustar, segure Shift para ajuste fino e dê duplo clique para voltar ao padrão.</p>
+
+<div class="warn" style="margin-top:26px">
+  <h3>Só para REAPER</h3>
+  <p>O OmniStrip é um efeito JSFX, o formato nativo do REAPER. Ele não é VST nem AU e não abre direto em outros programas de gravação.</p>
+</div>
+
+<h2>Licença</h2>
+<p>O OmniStrip é gratuito, inclusive para uso em trabalhos comerciais de áudio. Não é permitido redistribuir, revender ou publicar o arquivo do plugin, modificado ou não.</p>
+
+<footer>Desenvolvido por @helicleiton</footer>
+
+</div>
+<script>
+  // Cadastro de e-mail: Google Forms enviado num iframe oculto (mesmo esquema da pagina do Omnitone).
+  // FORM_ACTION: https://docs.google.com/forms/d/e/<ID>/formResponse    FORM_FIELD: entry.<numero> do campo de e-mail
+  var FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLScagbnxYTwJtBEr8JWCxeTSFCaJiUCia_osNOQHb5fT5Ls2hQ/formResponse';
+  var FORM_FIELD = 'entry.988193023';
+
+  var configurado = FORM_ACTION && FORM_FIELD;
+  var form = document.getElementById('cadastro');
+  var email = document.getElementById('email');
+  document.getElementById('aviso-config').hidden = !!configurado;
+
+  function liberar(baixar) {
+    document.getElementById('pedir').hidden = true;
+    document.getElementById('liberado').hidden = false;
+    if (baixar) document.getElementById('link-download').click();
+  }
+
+  // Quem ja deixou o e-mail neste navegador ve o botao de download direto.
+  try { if (localStorage.getItem('omnistrip-ok')) liberar(false); } catch (e) {}
+
+  form.addEventListener('submit', function (event) {
+    if (configurado) { form.action = FORM_ACTION; email.name = FORM_FIELD; }
+    else event.preventDefault();
+    try { localStorage.setItem('omnistrip-ok', '1'); } catch (e) {}
+    setTimeout(function () { liberar(true); }, 600);
+  });
+</script>
+</body>
+</html>
