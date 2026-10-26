@@ -1,0 +1,4 @@
+# arquivos publicados para o atualizador: bytes exatos (o SHA-256 do versao.txt depende disso)
+docs/download/OmniStrip.jsfx binary
+docs/versao.txt -text
+installer/OmniStrip_atualizador.lua -text
