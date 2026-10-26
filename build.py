@@ -1,10 +1,11 @@
-"""Gera o pacote de distribuicao do OmniStrip (docs/download/OmniStrip.zip).
+"""Gera os pacotes de distribuicao do OmniStrip: docs/download/OmniStrip.zip e OmniStrip-Setup.exe.
 
 Le o plugin direto da pasta de efeitos do REAPER (a copia em uso), guarda um
 backup do fonte em src/ (fora do git) e monta uma versao de distribuicao sem
 comentarios e sem indentacao, com aviso de licenca.
 
 JSFX e sempre texto: isso dificulta a leitura, mas nao esconde o codigo.
+O instalador para Windows (Inno Setup 6, installer/OmniStrip.iss) leva essa mesma versao.
 
 Uso: python build.py
 """
@@ -12,13 +13,18 @@ import io
 import os
 import re
 import shutil
+import subprocess
 import zipfile
 
-VERSION = "1.0"
+VERSION = "1.1"
 ROOT = os.path.dirname(os.path.abspath(__file__))
 LIVE = os.path.join(os.environ.get("APPDATA", ""), "REAPER", "Effects", "OmniStrip", "OmniStrip.jsfx")
 SRC = os.path.join(ROOT, "src", "OmniStrip.jsfx")
 OUT = os.path.join(ROOT, "docs", "download", "OmniStrip.zip")
+SETUP = os.path.join(ROOT, "docs", "download", "OmniStrip-Setup.exe")
+DIST = os.path.join(ROOT, "build", "OmniStrip.jsfx")
+ISCC = [os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "Inno Setup 6", "ISCC.exe"),
+        r"C:\Program Files (x86)\Inno Setup 6\ISCC.exe"]
 
 LICENSE = """// OmniStrip {v} - Desenvolvido por @helicleiton
 // Copyright (c) 2026 Helicleiton. Todos os direitos reservados.
@@ -66,6 +72,11 @@ def strip(code):
 
 def main():
     src = LIVE if os.path.isfile(LIVE) else SRC
+    # Se o instalador foi rodado nesta maquina, o arquivo do REAPER e a versao de distribuicao
+    # (sem comentarios): nao copia por cima do fonte em src/ e gera a partir de src/.
+    if src == LIVE and "Proibido redistribuir" in io.open(LIVE, encoding="utf-8").read(4000):
+        print("AVISO: o OmniStrip do REAPER e a versao instalada (sem comentarios); usando src/")
+        src = SRC
     if src == LIVE:
         os.makedirs(os.path.dirname(SRC), exist_ok=True)
         shutil.copyfile(LIVE, SRC)
@@ -75,9 +86,21 @@ def main():
     with zipfile.ZipFile(OUT, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr("OmniStrip/OmniStrip.jsfx", dist)
         z.writestr("LEIA-ME.txt", README.replace("\n", "\r\n"))
+    # instalador para Windows
+    os.makedirs(os.path.dirname(DIST), exist_ok=True)
+    io.open(DIST, "w", encoding="utf-8", newline="").write(dist)
+    iscc = next((p for p in ISCC if os.path.isfile(p)), None)
+    if iscc:
+        iss = os.path.join(ROOT, "installer", "OmniStrip.iss")
+        subprocess.run([iscc, "/Q", "/DAppVersion=" + VERSION, iss], check=True)
+        shutil.copyfile(os.path.join(ROOT, "installer", "Output", "OmniStrip-Setup-%s.exe" % VERSION), SETUP)
+    else:
+        print("AVISO: Inno Setup 6 nao encontrado; instalador nao gerado")
     print("fonte:", src)
     print("linhas: %d -> %d" % (len(code.splitlines()), len(dist.splitlines())))
     print("pacote:", OUT, "(%d KB)" % (os.path.getsize(OUT) // 1024))
+    if iscc:
+        print("instalador:", SETUP, "(%d KB)" % (os.path.getsize(SETUP) // 1024))
 
 
 if __name__ == "__main__":

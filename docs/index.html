@@ -111,12 +111,13 @@
           <input type="email" id="email" placeholder="seu e-mail" required autocomplete="email" aria-label="Seu e-mail">
           <button class="btn" type="submit">Baixar grátis</button>
         </form>
-        <p class="small">Versão 1.0 &middot; para REAPER (Windows, macOS e Linux) &middot; seu e-mail é usado só para avisos sobre o OmniStrip.</p>
+        <p class="small">Versão 1.1 &middot; para REAPER &middot; instalador para Windows ou zip para macOS e Linux &middot; seu e-mail é usado só para avisos sobre o OmniStrip.</p>
       </div>
       <div id="liberado" class="done" hidden>
         <h2>Obrigado! O download já começou.</h2>
         <p>Se não começar sozinho, use o botão abaixo. Depois veja <a href="#instalar" style="color:#fff">como instalar</a>.</p>
         <a class="btn" id="link-download" href="download/OmniStrip.zip" download>Baixar OmniStrip.zip</a>
+        <p class="small"><a id="link-alt" href="download/OmniStrip-Setup.exe" download style="color:#fff">Baixar o instalador para Windows</a></p>
       </div>
       <iframe name="envio" title="envio" hidden></iframe>
     </div>
@@ -163,13 +164,26 @@
 <p class="note">Os presets são pontos de partida: ajuste os thresholds do gate e do compressor ao nível da sua gravação.</p>
 
 <h2 id="instalar">Como instalar</h2>
+<h3 style="margin:0 0 6px;font-size:17px">Windows: instalador</h3>
+<ol>
+  <li>Abra o <b>OmniStrip-Setup.exe</b> e siga as telas: <b>Avançar</b>, <b>Avançar</b>, <b>Instalar</b>. Ele coloca o plugin na pasta de efeitos do REAPER sozinho.</li>
+  <li>No REAPER, abra a janela de efeitos de uma pista, aperte <b>F5</b> para atualizar a lista e procure por <b>OmniStrip</b>.</li>
+</ol>
+<p class="note">Usa o REAPER portátil? Na tela de destino do instalador, clique em Procurar e escolha a pasta <code>Effects</code> dele. Para remover, use "Adicionar ou remover programas" do Windows.</p>
+
+<div class="warn" style="margin:18px 0 26px">
+  <h3>Aviso do Windows ao abrir</h3>
+  <p>O OmniStrip é um projeto gratuito e o instalador não tem assinatura digital paga. Por isso o Windows pode mostrar a tela azul "O Windows protegeu o computador" (SmartScreen) na primeira vez. Para continuar: clique em <b>Mais informações</b> e depois em <b>Executar assim mesmo</b>.</p>
+</div>
+
+<h3 style="margin:0 0 6px;font-size:17px">macOS, Linux ou instalação manual: zip</h3>
 <ol>
   <li>Baixe e descompacte o <b>OmniStrip.zip</b>.</li>
   <li>No REAPER, abra <b>Options &gt; Show REAPER resource path in explorer/finder</b> e entre na pasta <code>Effects</code>.</li>
   <li>Copie a pasta <b>OmniStrip</b> do zip para dentro de <code>Effects</code>.</li>
   <li>Abra a janela de efeitos de uma pista, aperte <b>F5</b> para atualizar a lista e procure por <b>OmniStrip</b>.</li>
 </ol>
-<p class="note">No painel: arraste um knob para ajustar, segure Shift para ajuste fino e dê duplo clique para voltar ao padrão.</p>
+<p class="note">No painel: arraste um knob para ajustar, segure Shift para ajuste fino e dê duplo clique para voltar ao padrão. O botão SOBRE mostra os créditos e o QR code do Pix para quem quiser apoiar o projeto.</p>
 
 <div class="warn" style="margin-top:26px">
   <h3>Só para REAPER</h3>
@@ -179,7 +193,7 @@
 <h2>Licença</h2>
 <p>O OmniStrip é gratuito, inclusive para uso em trabalhos comerciais de áudio. Não é permitido redistribuir, revender ou publicar o arquivo do plugin, modificado ou não.</p>
 
-<footer>Desenvolvido por @helicleiton</footer>
+<footer>Desenvolvido por @helicleiton &middot; <a href="https://www.helicleiton.com">helicleiton.com</a></footer>
 
 </div>
 <script>
@@ -188,7 +202,14 @@
   // Em helicleiton.com/omnistrip (sem barra no fim) caminhos relativos apontariam para a raiz do site.
   var BASE = location.pathname.indexOf('/omnistrip') === 0 ? '/omnistrip/' : '';
   document.querySelector('#shot img').src = BASE + 'screenshot.png';
-  document.getElementById('link-download').href = BASE + 'download/OmniStrip.zip';
+  // Windows baixa o instalador; os outros sistemas, o zip. O link de baixo oferece a outra opcao.
+  var WIN = /Windows/i.test(navigator.userAgent);
+  var SETUP = BASE + 'download/OmniStrip-Setup.exe', ZIP = BASE + 'download/OmniStrip.zip';
+  var principal = document.getElementById('link-download'), alt = document.getElementById('link-alt');
+  principal.href = WIN ? SETUP : ZIP;
+  principal.textContent = WIN ? 'Baixar instalador para Windows' : 'Baixar OmniStrip.zip';
+  alt.href = WIN ? ZIP : SETUP;
+  alt.textContent = WIN ? 'Prefere o zip? Baixar OmniStrip.zip' : 'Usa Windows? Baixar o instalador';
 
   var FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLScagbnxYTwJtBEr8JWCxeTSFCaJiUCia_osNOQHb5fT5Ls2hQ/formResponse';
   var FORM_FIELD = 'entry.988193023';

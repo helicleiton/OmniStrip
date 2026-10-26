@@ -2,3 +2,6 @@
 src/
 __pycache__/
 .claude/
+# saidas do build (o instalador final vai para docs/download)
+build/
+installer/Output/
