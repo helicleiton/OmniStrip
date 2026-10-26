@@ -17,9 +17,9 @@ import shutil
 import subprocess
 import zipfile
 
-VERSION = "1.1"
+VERSION = "1.2"
 # o que mudou nesta versao (aparece no versao.txt lido pelo atualizador)
-NOVIDADES = "Painel SOBRE, instalador para Windows e avisos de atualizacao"
+NOVIDADES = "Compressor desligado ao inserir o plugin (neutro); parametro Drive com nome novo"
 ROOT = os.path.dirname(os.path.abspath(__file__))
 LIVE = os.path.join(os.environ.get("APPDATA", ""), "REAPER", "Effects", "OmniStrip", "OmniStrip.jsfx")
 SRC = os.path.join(ROOT, "src", "OmniStrip.jsfx")

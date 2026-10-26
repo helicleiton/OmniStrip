@@ -1,5 +1,5 @@
 desc: OmniStrip JSFX - Ultimate Channel Strip
-// OmniStrip 1.1 - Desenvolvido por @helicleiton
+// OmniStrip 1.2 - Desenvolvido por @helicleiton
 // Copyright (c) 2026 Helicleiton. Todos os direitos reservados.
 // Uso gratuito, inclusive em trabalhos comerciais de audio.
 // Proibido redistribuir, revender ou publicar este arquivo, modificado ou nao.
@@ -8,7 +8,7 @@ slider2:0<0,1,1{Off,On}>-IN - HPF
 slider3:80<20,500,1:log>-IN - HPF Freq (Hz)
 slider4:0<0,1,1{Off,On}>-IN - LPF
 slider5:18000<3000,20000,10:log>-IN - LPF Freq (Hz)
-slider6:0<0,100,0.1>-IN - Console Drive (%)
+slider6:0<0,100,0.1>-IN - Drive (%)
 slider7:0<0,1,1{Normal,Invertida}>-IN - Phase Invert
 slider8:1<0,1,1{On,Bypass}>-GATE - Bypass
 slider9:-50<-80,0,0.1>-GATE - Threshold (dB)
@@ -27,7 +27,7 @@ slider21:1<0.5,4,0.01>-EQ - High Mid Q
 slider22:0<-15,15,0.1>-EQ - High Mid Gain (dB)
 slider23:8000<3000,16000,10:log>-EQ - High Shelf Freq (Hz)
 slider24:0<-15,15,0.1>-EQ - High Shelf Gain (dB)
-slider25:0<0,1,1{On,Bypass}>-COMP - Bypass
+slider25:1<0,1,1{On,Bypass}>-COMP - Bypass
 slider26:0<-60,0,0.1>-COMP - Threshold (dB)
 slider27:3<1,20,0.1>-COMP - Ratio (x:1)
 slider28:10<0.5,100,0.1:log>-COMP - Attack (ms)
@@ -56,7 +56,7 @@ in_pin:Right In
 out_pin:Left Out
 out_pin:Right Out
 @init
-om_versao = 101;
+om_versao = 102;
 function alloc(n) local(p) ( p = mem_top; mem_top += n; p );
 function db2lin(x) ( exp(x * 0.11512925464970228) );
 function lin2db(x) ( log(max(x, 0.0000001)) * 8.685889638065035 );
@@ -871,7 +871,7 @@ setv(25, 0); setv(26, thr); setv(27, ratio); setv(28, att); setv(29, rel); setv(
 );
 function preset_comp(n)
 (
-n == 1 ? p_comp(0, 3, 10, 150, 0, 0);
+n == 1 ? ( p_comp(0, 3, 10, 150, 0, 0); setv(25, 1); );
 n == 2 ? p_comp(-20, 3, 10, 150, 80, 4);
 n == 3 ? p_comp(-24, 6, 3, 80, 100, 7);
 n == 4 ? p_comp(-18, 2.5, 20, 200, 0, 3);

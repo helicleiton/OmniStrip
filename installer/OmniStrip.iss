@@ -13,7 +13,7 @@
 ; O desinstalador tira so essa linha e mantem o resto do __startup.lua.
 
 #ifndef AppVersion
-  #define AppVersion "1.1"
+  #define AppVersion "1.2"
 #endif
 #define AppName "OmniStrip"
 #define AppPublisher "Helicleiton"

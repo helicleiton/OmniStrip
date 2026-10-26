@@ -1,4 +1,4 @@
-versao=1.1
+versao=1.2
 arquivo=https://www.helicleiton.com/omnistrip/download/OmniStrip.jsfx
-sha256=92b907009cc0170a4a3966165e5abef8511dc2ae4c234f301fd0df0b2a373a7c
-novidades=Painel SOBRE, instalador para Windows e avisos de atualizacao
+sha256=ce1e72fa73144206fd97098c225791b75bc7ba78015222704174c524264aec51
+novidades=Compressor desligado ao inserir o plugin (neutro); parametro Drive com nome novo
