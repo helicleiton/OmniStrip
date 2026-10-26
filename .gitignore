@@ -1,3 +1,4 @@
 # fonte do plugin: fica so na maquina, nunca vai para o repositorio publico
 src/
 __pycache__/
+.claude/

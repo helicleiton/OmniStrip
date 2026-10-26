@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>OmniStrip - channel strip vintage gratuita para REAPER</title>
+<link rel="canonical" href="https://www.helicleiton.com/omnistrip">
+<script>
+  // Endereco oficial: www.helicleiton.com/omnistrip (o site faz proxy desta pagina do GitHub Pages).
+  if (/github\.io$/.test(location.hostname)) location.replace('https://www.helicleiton.com/omnistrip' + location.hash);
+</script>
 <meta name="description" content="OmniStrip: channel strip gratuita para o REAPER com saturação de console e de fita de rolo, gate, EQ de 4 bandas, compressor, chorus, delay, reverb e presets por módulo.">
 <style>
   :root {
@@ -118,7 +123,7 @@
   </div>
 
   <div class="shot" id="shot">
-    <img src="screenshot.png" alt="Painel do OmniStrip: módulos de input, gate, compressor, equalizador, medidores VU, chorus, delay, reverb e output" onerror="document.getElementById('shot').classList.add('noimg')">
+    <img alt="Painel do OmniStrip: módulos de input, gate, compressor, equalizador, medidores VU, chorus, delay, reverb e output" onerror="document.getElementById('shot').classList.add('noimg')">
     <div class="fallback" aria-hidden="true">
       <div class="vu"><svg viewBox="0 0 200 120"><defs><linearGradient id="f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe9ae"/><stop offset="1" stop-color="#d2b97a"/></linearGradient></defs><rect width="200" height="120" fill="url(#f)"/><path d="M36 44 A90 90 0 0 1 128 22" fill="none" stroke="#1d1a14" stroke-width="2"/><path d="M128 22 A90 90 0 0 1 164 44" fill="none" stroke="#c41f19" stroke-width="4"/><text x="100" y="78" text-anchor="middle" font-family="Arial" font-weight="700" font-size="16" fill="#1d1a14">VU</text><line class="needle" x1="100" y1="108" x2="100" y2="24" stroke="#14110d" stroke-width="2"/><rect y="100" width="200" height="20" fill="#0f0f11"/></svg></div>
       <div class="vu"><svg viewBox="0 0 200 120"><rect width="200" height="120" fill="url(#f)"/><path d="M36 44 A90 90 0 0 1 128 22" fill="none" stroke="#1d1a14" stroke-width="2"/><path d="M128 22 A90 90 0 0 1 164 44" fill="none" stroke="#c41f19" stroke-width="4"/><text x="100" y="78" text-anchor="middle" font-family="Arial" font-weight="700" font-size="16" fill="#1d1a14">VU</text><line class="needle" x1="100" y1="108" x2="100" y2="24" stroke="#14110d" stroke-width="2"/><rect y="100" width="200" height="20" fill="#0f0f11"/></svg></div>
@@ -180,6 +185,11 @@
 <script>
   // Cadastro de e-mail: Google Forms enviado num iframe oculto (mesmo esquema da pagina do Omnitone).
   // FORM_ACTION: https://docs.google.com/forms/d/e/<ID>/formResponse    FORM_FIELD: entry.<numero> do campo de e-mail
+  // Em helicleiton.com/omnistrip (sem barra no fim) caminhos relativos apontariam para a raiz do site.
+  var BASE = location.pathname.indexOf('/omnistrip') === 0 ? '/omnistrip/' : '';
+  document.querySelector('#shot img').src = BASE + 'screenshot.png';
+  document.getElementById('link-download').href = BASE + 'download/OmniStrip.zip';
+
   var FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLScagbnxYTwJtBEr8JWCxeTSFCaJiUCia_osNOQHb5fT5Ls2hQ/formResponse';
   var FORM_FIELD = 'entry.988193023';
 
