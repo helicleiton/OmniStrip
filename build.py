@@ -103,6 +103,10 @@ def main():
     sha = hashlib.sha256(dist.encode("utf-8")).hexdigest()
     io.open(VERSAO_TXT, "w", encoding="utf-8", newline="\n").write(
         "versao=%s\narquivo=%s\nsha256=%s\nnovidades=%s\n" % (VERSION, URL_JSFX, sha, NOVIDADES))
+    # numero da versao mostrado na pagina
+    pag = os.path.join(ROOT, "docs", "index.html")
+    html = io.open(pag, encoding="utf-8").read()
+    io.open(pag, "w", encoding="utf-8").write(re.sub(r"Versão \d+\.\d+", "Versão " + VERSION, html))
     # instalador para Windows
     os.makedirs(os.path.dirname(DIST), exist_ok=True)
     io.open(DIST, "w", encoding="utf-8", newline="").write(dist)
