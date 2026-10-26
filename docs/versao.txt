@@ -1,0 +1,4 @@
+versao=1.1
+arquivo=https://www.helicleiton.com/omnistrip/download/OmniStrip.jsfx
+sha256=92b907009cc0170a4a3966165e5abef8511dc2ae4c234f301fd0df0b2a373a7c
+novidades=Painel SOBRE, instalador para Windows e avisos de atualizacao

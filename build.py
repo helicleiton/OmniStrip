@@ -9,6 +9,7 @@ O instalador para Windows (Inno Setup 6, installer/OmniStrip.iss) leva essa mesm
 
 Uso: python build.py
 """
+import hashlib
 import io
 import os
 import re
@@ -17,11 +18,17 @@ import subprocess
 import zipfile
 
 VERSION = "1.1"
+# o que mudou nesta versao (aparece no versao.txt lido pelo atualizador)
+NOVIDADES = "Painel SOBRE, instalador para Windows e avisos de atualizacao"
 ROOT = os.path.dirname(os.path.abspath(__file__))
 LIVE = os.path.join(os.environ.get("APPDATA", ""), "REAPER", "Effects", "OmniStrip", "OmniStrip.jsfx")
 SRC = os.path.join(ROOT, "src", "OmniStrip.jsfx")
 OUT = os.path.join(ROOT, "docs", "download", "OmniStrip.zip")
 SETUP = os.path.join(ROOT, "docs", "download", "OmniStrip-Setup.exe")
+# lidos pelo atualizador (installer/OmniStrip_atualizador.lua) em www.helicleiton.com/omnistrip
+JSFX_PUB = os.path.join(ROOT, "docs", "download", "OmniStrip.jsfx")
+VERSAO_TXT = os.path.join(ROOT, "docs", "versao.txt")
+URL_JSFX = "https://www.helicleiton.com/omnistrip/download/OmniStrip.jsfx"
 DIST = os.path.join(ROOT, "build", "OmniStrip.jsfx")
 ISCC = [os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "Inno Setup 6", "ISCC.exe"),
         r"C:\Program Files (x86)\Inno Setup 6\ISCC.exe"]
@@ -82,10 +89,20 @@ def main():
         shutil.copyfile(LIVE, SRC)
     code = io.open(src, encoding="utf-8").read()
     dist = strip(code)
+    # o numero de versao dentro do plugin (om_versao = 1.1 -> 101) precisa bater com VERSION
+    m = re.search(r"om_versao\s*=\s*(\d+);", code)
+    maj, mi = (int(x) for x in VERSION.split("."))
+    assert m and int(m.group(1)) == maj * 100 + mi, "om_versao no plugin (%s) difere de VERSION %s" % (m and m.group(1), VERSION)
+    assert "options:gmem=OmniStrip" in dist
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     with zipfile.ZipFile(OUT, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr("OmniStrip/OmniStrip.jsfx", dist)
         z.writestr("LEIA-ME.txt", README.replace("\n", "\r\n"))
+    # plugin solto + versao.txt, para o atualizador
+    io.open(JSFX_PUB, "w", encoding="utf-8", newline="").write(dist)
+    sha = hashlib.sha256(dist.encode("utf-8")).hexdigest()
+    io.open(VERSAO_TXT, "w", encoding="utf-8", newline="\n").write(
+        "versao=%s\narquivo=%s\nsha256=%s\nnovidades=%s\n" % (VERSION, URL_JSFX, sha, NOVIDADES))
     # instalador para Windows
     os.makedirs(os.path.dirname(DIST), exist_ok=True)
     io.open(DIST, "w", encoding="utf-8", newline="").write(dist)
@@ -99,6 +116,7 @@ def main():
     print("fonte:", src)
     print("linhas: %d -> %d" % (len(code.splitlines()), len(dist.splitlines())))
     print("pacote:", OUT, "(%d KB)" % (os.path.getsize(OUT) // 1024))
+    print("versao.txt:", VERSION, sha[:16] + "...")
     if iscc:
         print("instalador:", SETUP, "(%d KB)" % (os.path.getsize(SETUP) // 1024))
 
